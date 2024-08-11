@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
         'akjdsdoonomjkd cjcdfgfuoidjfyugf x \n udhewbwyeftiqcdeytwiucetyiuwvwuyywouyufcicufcyiux fyiuxcyuixu f');
 });
 
-
+// capacitacion hecha, la TO-DO list
 app.post('/post', (req, res) => {
     let body = req.body;
 
