@@ -7,10 +7,26 @@ interface ListProps {
     initialItems: ItemProps[];
 }
 
+const defaultItems: ListProps = {
+    initialItems: [
+        {id: 1, name: 'Item 1', isComplete: false},
+        {id: 2, name: 'Item 2', isComplete: false},
+        {id: 3, name: 'Item 3', isComplete: false},
+    ]
+};
 
-const List: React.FC<ListProps> = ({initialItems}) => {
-    const [items, setItems] = useState<ItemProps[]>(initialItems);
+function loadItems(): ItemProps[] {
+    const items = localStorage.getItem('items');
+    if (items) {
+        return JSON.parse(items);
+    }
+    return defaultItems.initialItems;
+}
+
+const List = () => {
+    const [items, setItems] = useState<ItemProps[]>(loadItems());
     const [inputValue, setInputValue] = useState('');
+    const [isInputValueValid, setIsInputValueValid] = useState(false);
 
     const toggleComplete = (id: number) => {
         console.log('Toggled item with id: ' + id);
@@ -23,10 +39,13 @@ const List: React.FC<ListProps> = ({initialItems}) => {
     const addItem = () => {
         setItems([...items, {id: items.length + 1, name: inputValue, isComplete: false}]);
         setInputValue('');
+        setIsInputValueValid(true);
+
     }
 
     useEffect(() => {
         console.log('List rendered', items);
+        localStorage.setItem('items', JSON.stringify(items));
     },[items]);
 
     return (

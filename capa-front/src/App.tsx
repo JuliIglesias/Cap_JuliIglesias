@@ -2,11 +2,6 @@ import React, { useEffect } from 'react';
 import List from './List';
 
 function App() {
-    const initialItems = [
-        {id: 1, name: 'Item 1', isComplete: false},
-        {id: 2, name: 'Item 2', isComplete: false},
-        {id: 3, name: 'Item 3', isComplete: false},
-    ];
 
     useEffect(() => {
         // Guarda el color de fondo actual
@@ -23,7 +18,7 @@ function App() {
 
     return (
         <div className="App">
-            <List initialItems={initialItems}/>
+            <List/>
         </div>
     );
 }

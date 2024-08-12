@@ -2,9 +2,10 @@ import React from "react";
 import {ListItem, ListItemText, Checkbox} from "@mui/material";
 
 interface ItemProps {
+    id: number;
     name: string;
     isComplete: boolean;
-    id: number;
+
 }
 
 const Item: React.FC<ItemProps> = ({ id, name, isComplete }) => {
