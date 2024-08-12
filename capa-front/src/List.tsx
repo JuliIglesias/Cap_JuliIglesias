@@ -26,7 +26,6 @@ function loadItems(): ItemProps[] {
 const List = () => {
     const [items, setItems] = useState<ItemProps[]>(loadItems());
     const [inputValue, setInputValue] = useState('');
-    const [isInputValueValid, setIsInputValueValid] = useState(false);
 
     const toggleComplete = (id: number) => {
         console.log('Toggled item with id: ' + id);
@@ -37,10 +36,11 @@ const List = () => {
     }
 
     const addItem = () => {
+        if (!inputValue) {
+            return;
+        }
         setItems([...items, {id: items.length + 1, name: inputValue, isComplete: false}]);
         setInputValue('');
-        setIsInputValueValid(true);
-
     }
 
     useEffect(() => {
