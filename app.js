@@ -1,17 +1,15 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 4567;
+//cors rules
+const cors = require('cors');
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-let db = [{id: 0, name: 'Juan'}, {id: 1, name: 'Pedro'}, {id: 2, name: 'Pablo'}];
+let db = [{id: 0, name: 'Juan', isComplete: false}, {id: 1, name: 'Pedro',isComplete: false}, {id: 2, name: 'Pablo',isComplete: false}];
 let id = 3;
-
-app.get('/', (req, res) => {
-    res.send('Hello World bitche!' +
-        'akjdsdoonomjkd cjcdfgfuoidjfyugf x \n udhewbwyeftiqcdeytwiucetyiuwvwuyywouyufcicufcyiux fyiuxcyuixu f');
-});
 
 // capacitacion hecha, la TO-DO list
 app.post('/post', (req, res) => {
@@ -20,6 +18,7 @@ app.post('/post', (req, res) => {
     let newItem = {
         id: id++,
         name: body.name,
+        isComplete: false
     }
 
     db.push(newItem);
@@ -27,7 +26,7 @@ app.post('/post', (req, res) => {
     console.log('oldBody',body);
     console.log('newBody', newItem)
     console.log('db', db);
-    res.send({body,newItem});
+    res.send(db);
 
     // en el postman pones el url completo con /post, elegis post, y en el body RAW escribis JSON con {} y mandale cumbia
 });
@@ -47,7 +46,7 @@ app.put('/put/:id', (req, res) => {
    res.send(findItem);
 });
 
-app.get('/get', (req, res) => {
+app.get('/items', (req, res) => {
     res.send(db);
 });
 
@@ -63,7 +62,7 @@ app.delete('/delete/:id', (req, res) => {
 
     console.log('db', db);
 
-    res.send(findItem);
+    res.send(db);
 });
 
 app.listen(port, () => {

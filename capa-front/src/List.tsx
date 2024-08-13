@@ -2,37 +2,48 @@ import React, {useEffect, useState} from 'react';
 import Item, {ItemProps} from "./Item";
 import {Button, Checkbox, TextField} from "@mui/material";
 
+import axios from "axios";
 
 interface ListProps {
     initialItems: ItemProps[];
-}
+} // se puede borrar, se vuleve tupido con el useState
 
-const defaultItems: ListProps = {
-    initialItems: [
-        {id: 1, name: 'Item 1', isComplete: false},
-        {id: 2, name: 'Item 2', isComplete: false},
-        {id: 3, name: 'Item 3', isComplete: false},
-    ]
-};
-
-function loadItems(): ItemProps[] {
-    const items = localStorage.getItem('items');
-    if (items) {
-        return JSON.parse(items);
-    }
-    return defaultItems.initialItems;
-}
+const APIURL = 'http://localhost:4567/';
 
 const List = () => {
-    const [items, setItems] = useState<ItemProps[]>(loadItems());
+    const [items, setItems] = useState<ItemProps[]>([]);
     const [inputValue, setInputValue] = useState('');
+
+    useEffect(() => {
+        axios.get( APIURL + 'items')
+            .then(backItems => {
+                console.log('List rendered', backItems.data);
+                setItems(backItems.data)
+            })
+            .catch((error: Error) => {console.log('Error getting', error)});
+
+        localStorage.setItem('items', JSON.stringify(items));
+
+        addItem();
+    },[]);
 
     const toggleComplete = (id: number) => {
         console.log('Toggled item with id: ' + id);
         const newItems = items.filter(item => item.id !== id);
 
-        // falta actualizar items, creo q con esto va
-        setItems(newItems);
+        setTimeout(() => {
+            // falta actualizar items, creo q con esto va
+            setItems(newItems);
+            console.log('Items after toggle', newItems);
+
+            axios.delete(APIURL + `delete/${id}`, {data: {id: id}})
+                .then(r => {
+                    console.log('Item deleted', r.data);
+                    setItems(r.data);
+                }).catch((error: Error) => {
+                console.log('Error deleting', error)
+            });
+        }, 1000);
     }
 
     const addItem = () => {
@@ -41,20 +52,21 @@ const List = () => {
         }
         setItems([...items, {id: items.length + 1, name: inputValue, isComplete: false}]);
         setInputValue('');
+
+        axios.post(APIURL + 'post', {name: inputValue, isComplete: false})
+            .then(r => {
+                console.log('Item added', r.data);
+                setItems(r.data);
+            }).catch((error: Error) => {console.log('Error adding', error)});
     }
 
-    useEffect(() => {
-        console.log('List rendered', items);
-        localStorage.setItem('items', JSON.stringify(items));
-    },[items]);
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <ul style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center'}}>
-                {items.map(item => (
+                {items && items.map(item => (
                     <li key={item.id} style={{display: 'flex', alignItems: 'center'}}>
                         <Checkbox color={"secondary"}
-                                  checked={item.isComplete}
                                   onChange={() => toggleComplete(item.id)}/>
                         <Item key={item.id} {...item} />
                     </li>
