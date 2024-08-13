@@ -11,7 +11,7 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ id, name, isComplete }) => {
     return (
         <ListItem key={id}>
-            <ListItemText primary={name} style={{ color: 'white' }}/>
+            <ListItemText primary={name} style={{ color: 'black' }}/>
         </ListItem>
     );
 }

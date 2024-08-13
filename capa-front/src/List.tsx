@@ -65,19 +65,21 @@ const List = () => {
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <ul style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center'}}>
                 {items && items.map(item => (
-                    <li key={item.id} style={{display: 'flex', alignItems: 'center'}}>
-                        <Checkbox color={"secondary"}
-                                  onChange={() => toggleComplete(item.id)}/>
-                        <Item key={item.id} {...item} />
-                    </li>
-                ))}
+                    <div style={{backgroundColor: 'lightblue', padding: 10, margin: 5, borderRadius: 5}}>
+                        <li key={item.id} style={{display: 'flex', alignItems: 'center'}}>
+                            <Checkbox color={"secondary"}
+                                      onChange={() => toggleComplete(item.id)}/>
+                            <Item key={item.id} {...item} />
+                        </li>
+                    </div>
+                    ))}
             </ul>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
                 <TextField size="small"
                            id="outlined-basic"
                            color={"secondary"}
                            variant="filled"
-                           inputProps={{style: {color: 'white', padding: 10}}}
+                           inputProps={{style: {padding: 10}}}
                            value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
                 <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
                         onClick={addItem}>Add Item</Button>
