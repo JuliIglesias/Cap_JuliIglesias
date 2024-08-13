@@ -43,7 +43,7 @@ app.put('/put/:id', (req, res) => {
 
    if(!findItem){ res.status(404).send('No se encontro el item') }
    findItem.name = iteme.name;
-   res.send(findItem);
+   res.send(db);
 });
 
 app.get('/items', (req, res) => {
@@ -64,6 +64,13 @@ app.delete('/delete/:id', (req, res) => {
 
     res.send(db);
 });
+
+app.delete('/delete', (req, res) => {
+    db=[];
+    console.log('db', db);
+    res.send(db);
+});
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);}

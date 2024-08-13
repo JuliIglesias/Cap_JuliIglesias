@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Item, {ItemProps} from "./Item";
-import {Button, Checkbox, TextField} from "@mui/material";
+import {Button, Checkbox, Modal, TextField} from "@mui/material";
 
 import axios from "axios";
 
@@ -13,6 +13,10 @@ const APIURL = 'http://localhost:4567/';
 const List = () => {
     const [items, setItems] = useState<ItemProps[]>([]);
     const [inputValue, setInputValue] = useState('');
+    const [newInputValue, setNewInputValue] = useState('');
+
+    const [open, setOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<ItemProps | null>(null);
 
     useEffect(() => {
         axios.get( APIURL + 'items')
@@ -46,16 +50,38 @@ const List = () => {
         }, 1000);
     }
 
+    const clearItems = () => {
+        axios.delete(APIURL + `delete`)
+            .then(r => {
+                console.log('Item deleted', r.data);
+                setItems(r.data);
+            }).catch((error: Error) => {
+            console.log('Error clearing', error)
+        });
+    }
     const addItem = () => {
         if (!inputValue) {
             return;
         }
-        setItems([...items, {id: items.length + 1, name: inputValue, isComplete: false}]);
         setInputValue('');
 
         axios.post(APIURL + 'post', {name: inputValue, isComplete: false})
             .then(r => {
                 console.log('Item added', r.data);
+                setItems(r.data);
+            }).catch((error: Error) => {console.log('Error adding', error)});
+    }
+
+    const updateItem = (id: number) => {
+        if (!newInputValue) {
+            return;
+        }
+        setNewInputValue('');
+        setOpen(false);
+
+        axios.put(APIURL + `put/${id}`, {name: newInputValue, isComplete: false})
+            .then(r => {
+                console.log('Item updated', r.data);
                 setItems(r.data);
             }).catch((error: Error) => {console.log('Error adding', error)});
     }
@@ -71,6 +97,25 @@ const List = () => {
                                       onChange={() => toggleComplete(item.id)}/>
                             <Item key={item.id} {...item} />
                         </li>
+
+                        <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
+                                onClick={() => setOpen(true)}>Update Item</Button>
+
+                        <Modal
+                                open={open}
+                            onClose={() => setOpen(false)}
+                        >
+                            <div style={{backgroundColor: 'gray', padding: '1rem', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
+                                <TextField size="small"
+                                           id="outlined-basic"
+                                           color={"secondary"}
+                                           variant="filled"
+                                           inputProps={{style: {padding: 10}}}
+                                           value={newInputValue} onChange={(e) => setNewInputValue(e.target.value)}/>
+                                <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
+                                        onClick={() => updateItem(item.id)}>Save change</Button>
+                            </div>
+                        </Modal>
                     </div>
                     ))}
             </ul>
@@ -86,7 +131,8 @@ const List = () => {
             </div>
 
             <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
-                    onClick={() => setItems([])}>Clear List</Button>
+                    onClick={() => clearItems()}>Clear List</Button>
+
         </div>
     );
 }
