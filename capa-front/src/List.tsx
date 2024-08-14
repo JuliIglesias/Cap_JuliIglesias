@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import Item, {ItemProps} from "./Item";
-import {Button, Checkbox, Modal, TextField} from "@mui/material";
+import {
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Modal,
+    TextField
+} from "@mui/material";
 
 import axios from "axios";
 
@@ -14,6 +24,15 @@ const List = () => {
     const [items, setItems] = useState<ItemProps[]>([]);
     const [inputValue, setInputValue] = useState('');
 
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
     useEffect(() => {
         axios.get( APIURL + 'items')
@@ -48,6 +67,8 @@ const List = () => {
     }
 
     const clearItems = () => {
+        handleCloseDialog();
+
         axios.delete(APIURL + `delete`)
             .then(r => {
                 console.log('Item deleted', r.data);
@@ -71,17 +92,13 @@ const List = () => {
     }
 
 
-
-
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <ul style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center'}}>
                 {items && items.map(item => (
                     <div style={{backgroundColor: 'lightblue', padding: 10, margin: 5, borderRadius: 5}}>
                         <li key={item.id} style={{display: 'flex', alignItems: 'center'}}>
-                            <Checkbox color={"secondary"}
-                                      onChange={() => toggleComplete(item.id)}/>
-                            <Item key={item.id} {...item} setItems={setItems} />
+                            <Item key={item.id} {...item} setItems={setItems} toggleComplete={toggleComplete}/>
                         </li>
                     </div>
                     ))}
@@ -98,7 +115,27 @@ const List = () => {
             </div>
 
             <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
-                    onClick={() => clearItems()}>Clear List</Button>
+                    onClick={handleOpenDialog}>Clear List</Button>
+
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+            >
+                <DialogTitle>{"Are you sure?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        This action will clear all items. Are you sure you want to proceed?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>
+                        Cancel
+                    </Button>
+                    <Button onClick={clearItems} color="secondary" autoFocus>
+                        Yes, clear all
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </div>
     );

@@ -1,5 +1,15 @@
 import React, {useState} from "react";
-import {ListItem, ListItemText, Checkbox, Button, Modal, TextField} from "@mui/material";
+import {
+    ListItem,
+    ListItemText,
+    Checkbox,
+    Button,
+    Modal,
+    TextField,
+    Dialog,
+    DialogTitle,
+    DialogContent, DialogContentText, DialogActions
+} from "@mui/material";
 import axios from "axios";
 
 interface ItemProps {
@@ -10,21 +20,31 @@ interface ItemProps {
 
 interface ItemWithSetItemsProps extends ItemProps {
     setItems: React.Dispatch<React.SetStateAction<ItemProps[]>>;
+    toggleComplete: (id: number) => void;
 }
 
 const APIURL = 'http://localhost:4567/';
 
 
-const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems}) => {
+const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems,    toggleComplete}) => {
     const [open, setOpen] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const [newInputValue, setNewInputValue] = useState('');
 
     const handleInputChange = (id: number) => {
         setOpen(true);
         console.log('Input changed', id);
-        updateItem(id);
     }
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setOpen(false);
+    };
 
     const updateItem = (id: number) => {
         if (!newInputValue) {
@@ -32,6 +52,7 @@ const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems
         }
         setNewInputValue('');
         setOpen(false);
+        handleCloseDialog();
 
         axios.put(APIURL + `put/${id}`, {name: newInputValue, isComplete: false})
             .then(r => {
@@ -41,12 +62,19 @@ const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems
     }
 
 
-    return (
-        <ListItem key={id}>
-            <ListItemText primary={name} style={{ color: 'black' }}/>
-            <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
-                    onClick={() => handleInputChange(id)}>Update Item</Button>
 
+
+    return (
+        <ListItem key={id} style={{ flexDirection: 'column', alignItems: 'start' }}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
+                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Checkbox color={"secondary"}
+                              onChange={() => toggleComplete(id)}/>
+                    <ListItemText primary={name} style={{color: 'black', justifySelf: 'center'}}/>
+                </div>
+                <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
+                        onClick={() => handleInputChange(id)}>Update Item</Button>
+            </div>
             <Modal
                 open={open}
                 onClose={() => setOpen(false)}
@@ -59,9 +87,29 @@ const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems
                                inputProps={{style: {padding: 10}}}
                                value={newInputValue} onChange={(e) => setNewInputValue(e.target.value)}/>
                     <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
-                            onClick={() => updateItem(id)}>Save change</Button>
+                            onClick={handleOpenDialog}>Save change</Button>
                 </div>
             </Modal>
+
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+            >
+                <DialogTitle>{"Are you sure?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        This action will update the item. Are you sure you want to proceed?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>
+                        Cancel
+                    </Button>
+                    <Button onClick={() => updateItem(id)} color="secondary" autoFocus>
+                        Yes, update
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </ListItem>
     );
 }
