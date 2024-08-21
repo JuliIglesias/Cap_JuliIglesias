@@ -12,7 +12,7 @@ let db = [{id: 0, name: 'Juan', isComplete: false}, {id: 1, name: 'Pedro',isComp
 let id = 3;
 
 // capacitacion hecha, la TO-DO list
-app.post('/post', (req, res) => {
+app.post('/create', (req, res) => {
     let body = req.body;
 
     let newItem = {
@@ -31,8 +31,7 @@ app.post('/post', (req, res) => {
     // en el postman pones el url completo con /post, elegis post, y en el body RAW escribis JSON con {} y mandale cumbia
 });
 
-
-app.put('/put/:id', (req, res) => {
+app.put('/update/:id', (req, res) => {
    let id1 = parseInt(req.params.id);
 
    let iteme = req.body;
@@ -46,7 +45,7 @@ app.put('/put/:id', (req, res) => {
    res.send(db);
 });
 
-app.get('/items', (req, res) => {
+app.get('/getAll', (req, res) => {
     res.send(db);
 });
 
@@ -65,7 +64,7 @@ app.delete('/delete/:id', (req, res) => {
     res.send(db);
 });
 
-app.delete('/delete', (req, res) => {
+app.delete('/deleteAll', (req, res) => {
     db=[];
     console.log('db', db);
     res.send(db);
