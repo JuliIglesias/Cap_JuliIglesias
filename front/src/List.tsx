@@ -18,7 +18,7 @@ interface ListProps {
     initialItems: ItemProps[];
 } // se puede borrar, se vuleve tupido con el useState
 
-const APIURL = 'http://localhost:4567/';
+const APIURL = 'http://localhost:4567/api/list/';
 
 const List = () => {
     const [items, setItems] = useState<ItemProps[]>([]);
@@ -87,7 +87,7 @@ const List = () => {
         axios.post(APIURL + 'create', {name: inputValue, isComplete: false})
             .then(r => {
                 console.log('Item added', r.data);
-                setItems(r.data);
+                setItems(prevItems => [...prevItems, r.data]); // Aquí se actualiza el estado con el nuevo ítem
             }).catch((error: Error) => {console.log('Error adding', error)});
     }
 
@@ -95,13 +95,13 @@ const List = () => {
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <ul style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center'}}>
-                {items && items.map(item => (
+                {Array.isArray(items) && items.map(item => (
                     <div style={{backgroundColor: 'lightblue', padding: 10, margin: 5, borderRadius: 5}}>
                         <li key={item.id} style={{display: 'flex', alignItems: 'center'}}>
                             <Item key={item.id} {...item} setItems={setItems} toggleComplete={toggleComplete}/>
                         </li>
                     </div>
-                    ))}
+                ))}
             </ul>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
                 <TextField size="small"

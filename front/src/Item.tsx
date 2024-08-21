@@ -16,6 +16,8 @@ interface ItemProps {
     id: number;
     name: string;
     isComplete: boolean;
+    updatedAt: Date;
+    createdAt: Date;
 }
 
 interface ItemWithSetItemsProps extends ItemProps {
@@ -23,7 +25,7 @@ interface ItemWithSetItemsProps extends ItemProps {
     toggleComplete: (id: number) => void;
 }
 
-const APIURL = 'http://localhost:4567/';
+const APIURL = 'http://localhost:4567/api/list/';
 
 
 const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems,    toggleComplete}) => {
@@ -54,10 +56,10 @@ const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems
         setOpen(false);
         handleCloseDialog();
 
-        axios.put(APIURL + `put/${id}`, {name: newInputValue, isComplete: false})
+        axios.put(APIURL + `update/${id}`, {id: id, name: newInputValue, isComplete: false})
             .then(r => {
                 console.log('Item updated', r.data);
-                setItems(r.data);
+                setItems(prevItems => prevItems.map(item => item.id === id ? r.data : item));
             }).catch((error: Error) => {console.log('Error adding', error)});
     }
 
@@ -71,6 +73,7 @@ const Item: React.FC<ItemWithSetItemsProps> = ({ id, name, isComplete , setItems
                     <Checkbox color={"secondary"}
                               onChange={() => toggleComplete(id)}/>
                     <ListItemText primary={name} style={{color: 'black', justifySelf: 'center'}}/>
+
                 </div>
                 <Button variant={"contained"} color={"secondary"} style={{color: 'white', margin: '10px'}}
                         onClick={() => handleInputChange(id)}>Update Item</Button>

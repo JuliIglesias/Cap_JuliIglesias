@@ -27,13 +27,14 @@ const getItemsList = async (req: Request, res: Response) => {
 
 const updateItemList = async (req: Request, res: Response) => {
     try {
-        const { id, name } = req.body;
+        const { id, name, isComplete } = req.body;
         const updatedBlogPost = await prisma.item.update({
             where: {
                 id: Number(id),
             },
             data: {
-                name
+                name,
+                isComplete
             },
         });
         res.status(200).json(updatedBlogPost);
