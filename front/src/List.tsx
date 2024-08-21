@@ -35,7 +35,7 @@ const List = () => {
     };
 
     useEffect(() => {
-        axios.get( APIURL + 'items')
+        axios.get( APIURL + 'getAll')
             .then(backItems => {
                 console.log('List rendered', backItems.data);
                 setItems(backItems.data)
@@ -69,7 +69,7 @@ const List = () => {
     const clearItems = () => {
         handleCloseDialog();
 
-        axios.delete(APIURL + `delete`)
+        axios.delete(APIURL + `deleteAll`)
             .then(r => {
                 console.log('Item deleted', r.data);
                 setItems(r.data);
@@ -84,7 +84,7 @@ const List = () => {
         }
         setInputValue('');
 
-        axios.post(APIURL + 'post', {name: inputValue, isComplete: false})
+        axios.post(APIURL + 'create', {name: inputValue, isComplete: false})
             .then(r => {
                 console.log('Item added', r.data);
                 setItems(r.data);
